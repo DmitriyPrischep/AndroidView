@@ -45,7 +45,6 @@ public class DataSource {
             int color = mColors[random.nextInt(mColors.length)];
             myData.add(new MyData(titles, color));
         }
-
     }
 
     public List<MyData> getData() {
