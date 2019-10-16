@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">firstapp</string>
+    <string name="add_element">Add element</string>
 </resources>

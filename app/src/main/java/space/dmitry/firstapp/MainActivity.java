@@ -1,19 +1,18 @@
 package space.dmitry.firstapp;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Bitmap;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,16 +29,24 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.list);
 
-        myAdapter = new MyDataAdapter(DataSource.getInstance().getData());
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        myAdapter = new MyDataAdapter(NumberSource.getInstance().getData());
+
+        int spanCount;
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            spanCount = 3;
+        } else {
+            spanCount = 4;
+        }
+        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
         recyclerView.setAdapter(myAdapter);
     }
 
     class MyDataAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
-        List<DataSource.MyData> myData;
+        List<NumberSource.Number> myData;
 
-        public MyDataAdapter(List<DataSource.MyData> myData) {
+        MyDataAdapter(List<NumberSource.Number> myData) {
             this.myData = myData;
         }
 
@@ -56,35 +63,43 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             Log.d("ListActivity", "onBindViewHolder" + position);
-            DataSource.MyData data = this.myData.get(position);
-
-            holder.title.setText(data.mTitle);
-            Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            bitmap.eraseColor(data.mColor);
-
-            holder.imageView.setImageBitmap(bitmap);
+            NumberSource.Number number = this.myData.get(position);
+            holder.numberValue.setText(String.valueOf(number.value));
+            int colorType = (number.value % 2 == 0) ? R.color.colorRed: R.color.colorBlue;
+            holder.numberValue.setTextColor(getResources().getColor(colorType, null));
         }
 
         @Override
         public int getItemCount() {
             return myData.size();
         }
+
+        public void addElement() {
+            myData.add(new NumberSource.Number(myData.size()));
+        }
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView imageView;
-        private final TextView title;
+        private final TextView numberValue;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image);
-            title = itemView.findViewById(R.id.title);
-            imageView.setOnClickListener(view -> {
+            numberValue = itemView.findViewById(R.id.number);
+
+            numberValue.setOnClickListener(view -> {
                 int pos = getAdapterPosition();
-                DataSource.MyData myData = myAdapter.myData.get(pos);
-                Toast.makeText(getApplicationContext(), myData.mTitle, Toast.LENGTH_SHORT).show();
+                NumberSource.Number number = myAdapter.myData.get(pos);
+                Toast.makeText(getApplicationContext(), Integer.toString(number.value), Toast.LENGTH_SHORT).show();
             });
+
+            Button button = findViewById(R.id.add_button);
+            button.setOnClickListener(v -> {
+                myAdapter.addElement();
+//                clickListener.onChangeContent();
+                Toast.makeText(getApplicationContext(), Integer.toString(myAdapter.getItemCount()), Toast.LENGTH_SHORT).show();
+            });
+
         }
     }
 }

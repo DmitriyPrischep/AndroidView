@@ -18,6 +18,10 @@ public class NumberSource {
         return numberList;
     }
 
+    public void addElement(int value){
+        numberList.add(new Number(value));
+    }
+
     public synchronized static NumberSource getInstance() {
         if (sInstance == null) {
             sInstance = new NumberSource();
