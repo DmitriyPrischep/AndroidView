@@ -1,6 +1,5 @@
 package space.dmitry.firstapp;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = findViewById(R.id.list);
+        RecyclerView recyclerView = findViewById(R.id.grid);
 
         myAdapter = new MyDataAdapter(NumberSource.getInstance().getData());
 
@@ -52,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        // Создание ViewHolder'а на основе разметки list_item
+        // Создание ViewHolder'а на основе разметки grid_item
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             Log.d("ListActivity", "onCreateViewHolder");
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item, parent, false);
             return new MyViewHolder(view);
         }
 
@@ -75,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void addElement() {
-            myData.add(new NumberSource.Number(myData.size()));
+            int value = myData.size() + 1;
+            myData.add(new NumberSource.Number(value));
+            notifyItemChanged(value);
         }
     }
 
@@ -96,8 +97,7 @@ public class MainActivity extends AppCompatActivity {
             Button button = findViewById(R.id.add_button);
             button.setOnClickListener(v -> {
                 myAdapter.addElement();
-//                clickListener.onChangeContent();
-                Toast.makeText(getApplicationContext(), Integer.toString(myAdapter.getItemCount()), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), Integer.toString(myAdapter.getItemCount()), Toast.LENGTH_SHORT).show();
             });
 
         }
